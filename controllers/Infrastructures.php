@@ -2,12 +2,13 @@
 
 namespace Controller;
 
+use \Firebase\JWT\JWT;
 use Phalcon\Mvc\Controller;
 
 class Infrastructures extends Controller
 {
 	public function get() {
-        //$robot = $this->request->getJsonRawBody();
+        
         $authHeader = $this->request->getHeader('Authorization');
 
         if ($authHeader) {
@@ -19,16 +20,20 @@ class Infrastructures extends Controller
                    
                     $secretKey = base64_decode("8idyoIEFxsf\/DOpNVbhbbxoqdDnda5HH4vDuhZ9Q+1JGYKu0fZaCZZbou1TOPxaKh6ayVx8wAJEs9HynchmVSg==");
                     
-                    $token = JWT::decode($jwt, $secretKey, array('HS512'));
+                    try {
+                        $token = JWT::decode($jwt, $secretKey, array('HS512'));
 
-                   
-                    /*
-                     * return protected asset
-                     */
-                    header('Content-type: application/json');
-                    echo json_encode([
-                        'msg'    => "Benvenuto"
-                    ]);
+                       
+                        /*
+                         * return protected asset
+                         */
+                        header('Content-type: application/json');
+                        echo json_encode([
+                            'msg'    => "Benvenuto"
+                        ]);
+                    } catch (\Firebase\JWT\ExpiredException $e) {
+                        echo json_encode($e->getMessage());      
+                    }
 
                 } catch (Exception $e) {
                     header('HTTP/1.0 401 Unauthorized');

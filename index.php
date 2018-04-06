@@ -1,7 +1,4 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization");
-
 use Phalcon\Loader;
 use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\Micro\Collection as MicroCollection;
@@ -14,6 +11,7 @@ $loader->registerNamespaces(
     [
         'Model' => __DIR__ . '/models/',
         'Controller' => __DIR__ . '/controllers/',
+        'Firebase\JWT' => __DIR__ . '/vendor/firebase/php-jwt/src/'
     ]
 );
 
@@ -36,6 +34,21 @@ $di->set(
 
 $app = new Micro($di);
 
+$app->before(function() use ($app) {
+    $app->response->setHeader("Access-Control-Allow-Origin", '*')
+      ->setHeader("Access-Control-Allow-Methods", 'GET,PUT,POST,DELETE,OPTIONS')
+      ->setHeader("Access-Control-Allow-Headers", 'Origin, X-Requested-With, Content-Range, Content-Disposition, Content-Type, Authorization')
+      ->setHeader("Access-Control-Allow-Credentials", true);
+
+    $app->response->sendHeaders();
+    return true;
+});
+
+$app->options('/{catch:(.*)}', function() use ($app) { 
+    $app->response->setStatusCode(200, "OK")->send();
+    return true;
+});
+
 $users = new MicroCollection();
 $users->setHandler(new Controller\Users());
 $users->setPrefix('/users');
@@ -47,7 +60,6 @@ $infrastructures->setHandler(new Controller\Infrastructures());
 $infrastructures->setPrefix('/infrastructures');
 $infrastructures->get('/get', 'get');
 $app->mount($infrastructures);
-
 
 $app->handle();
 ?>
