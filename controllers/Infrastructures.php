@@ -40,7 +40,7 @@ class Infrastructures extends Controller
 								$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 								if(socket_connect($socket, $parsed_data[$idx]['ip'], $parsed_data[$idx]['port']))
 								{
-									$request = "GET hostgroups\nColumns: alias worst_service_state\n";
+									$request = "GET hostgroups\nColumns: alias worst_service_state name\n";
 
 									socket_write($socket, $request, strlen($request));
 									socket_shutdown($socket, 1);
@@ -60,6 +60,7 @@ class Infrastructures extends Controller
 											$exploded_values_ex = explode("-", $exploded_values[0]);
 											$parsed_data[$idx]['hostgroups'][$count]['alias'] = $exploded_values_ex[1];
 											$parsed_data[$idx]['hostgroups'][$count]['status'] = $exploded_values[1];
+											$parsed_data[$idx]['hostgroups'][$count]['name'] = $exploded_values[2];
 
 											if($parsed_data[$idx]['hostgroups'][$count]['status'] == 1 && $parsed_data[$idx]['status'] == 'up')
 												$parsed_data[$idx]['status'] = 'warning';

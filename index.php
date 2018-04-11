@@ -44,7 +44,7 @@ $app->before(function() use ($app) {
     return true;
 });
 
-$app->options('/{catch:(.*)}', function() use ($app) { 
+$app->options('/{catch:(.*)}', function() use ($app) {
     $app->response->setStatusCode(200, "OK")->send();
     return true;
 });
@@ -60,6 +60,12 @@ $infrastructures->setHandler(new Controller\Infrastructures());
 $infrastructures->setPrefix('/infrastructures');
 $infrastructures->get('/get', 'get');
 $app->mount($infrastructures);
+
+$services = new MicroCollection();
+$services->setHandler(new Controller\Services());
+$services->setPrefix('/services');
+$services->post('/get', 'get');
+$app->mount($services);
 
 $app->handle();
 ?>
