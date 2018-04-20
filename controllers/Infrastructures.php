@@ -16,7 +16,7 @@ class Infrastructures extends Controller
         	$secretKey = base64_decode("8idyoIEFxsf\/DOpNVbhbbxoqdDnda5HH4vDuhZ9Q+1JGYKu0fZaCZZbou1TOPxaKh6ayVx8wAJEs9HynchmVSg==");
 					try {
           	$token = JWT::decode($jwt, $secretKey, array('HS512'));
-						$phql = "SELECT Model\customer_servers.id, Model\customers.name, Model\customer_servers.ip_address, Model\customer_servers.port_number, Model\customer_servers.description
+						$phql = "SELECT Model\user_infrastructures.state, Model\customer_servers.id, Model\customers.name, Model\customer_servers.ip_address, Model\customer_servers.port_number, Model\customer_servers.description
 										 FROM Model\user_infrastructures
 										 INNER JOIN Model\customer_servers ON Model\user_infrastructures.customer_server_id = Model\customer_servers.customer_id
 										 INNER JOIN Model\customers ON Model\customer_servers.customer_id = Model\customers.id
@@ -32,7 +32,7 @@ class Infrastructures extends Controller
 										'name' => $user->name,
 										'ip' => $user->ip_address,
   									'port' => $user->port_number,
-  									'state' => 'active',
+  									'state' => $user->state,
   									'description' => $user->description,
   									'status' => 'up'
 		            ];

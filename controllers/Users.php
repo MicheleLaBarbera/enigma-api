@@ -28,7 +28,7 @@ class Users extends Controller
 	        	$tokenId    = base64_encode(mcrypt_create_iv(32));
                 $issuedAt   = time();
                 $notBefore  = $issuedAt + 10;
-                $expire     = $notBefore + 3600000;
+                $expire     = $notBefore + 1 * 60 * 60;
                 $serverName = "AngularCMK";
 
                 $data = [

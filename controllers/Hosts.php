@@ -4,7 +4,7 @@ namespace Controller;
 use \Firebase\JWT\JWT;
 use Phalcon\Mvc\Controller;
 
-class Services extends Controller
+class Hosts extends Controller
 {
 	public function get() {
   	$authHeader = $this->request->getHeader('Authorization');
@@ -22,7 +22,8 @@ class Services extends Controller
 						$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 						if(socket_connect($socket, $robot->ip, $robot->port))
 						{
-              $request = "GET services\nColumns: display_name service_plugin_output service_last_state_change service_state host_name\nFilter: host_name = ". $robot->name ."\n";
+              $request = "GET hostsbygroup\nColumns: host_address host_alias groups host_num_services_crit host_num_services_ok host_num_services_unknown host_num_services_warn display_name\nFilter: groups >= ". $robot->group ."\n";
+
         			socket_write($socket, $request, strlen($request));
         			socket_shutdown($socket, 1);
         			socket_recv($socket, $buf, 1000000, MSG_WAITALL);
@@ -37,11 +38,14 @@ class Services extends Controller
         				if($value != '') {
         					$exploded_values = explode(";", $value);
 
-        					$array[$count]['name'] = $exploded_values[0];
-									$array[$count]['status'] = $exploded_values[1];
-        					$array[$count]['age'] = date("H:i:s / d-m-Y", $exploded_values[2]);
-        					$array[$count]['state'] = $exploded_values[3];
-									$array[$count]['h_name'] = $exploded_values[4];
+        					$array[$count]['address'] = $exploded_values[0];
+									$array[$count]['alias'] = $exploded_values[1];
+        					$array[$count]['groups'] = $exploded_values[2];
+        					$array[$count]['crit'] = $exploded_values[3];
+        					$array[$count]['ok'] = $exploded_values[4];
+                  $array[$count]['unknown'] = $exploded_values[5];
+        					$array[$count]['warn'] = $exploded_values[6];
+									$array[$count]['name'] = $exploded_values[7];
 
         					$count++;
         				}

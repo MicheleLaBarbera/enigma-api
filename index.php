@@ -61,6 +61,12 @@ $infrastructures->setPrefix('/infrastructures');
 $infrastructures->get('/get', 'get');
 $app->mount($infrastructures);
 
+$hosts = new MicroCollection();
+$hosts->setHandler(new Controller\Hosts());
+$hosts->setPrefix('/hosts');
+$hosts->post('/get', 'get');
+$app->mount($hosts);
+
 $services = new MicroCollection();
 $services->setHandler(new Controller\Services());
 $services->setPrefix('/services');
