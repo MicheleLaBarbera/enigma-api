@@ -19,7 +19,8 @@ class Users extends Controller
                 'id'   => $user->id,
                 'password' => $user->password,
 								'firstname' => $user->firstname,
-								'lastname' => $user->lastname
+								'lastname' => $user->lastname,
+								'logo' => $user->logo
             ];
         }
 
@@ -46,7 +47,7 @@ class Users extends Controller
                 $secretKey = base64_decode("8idyoIEFxsf\/DOpNVbhbbxoqdDnda5HH4vDuhZ9Q+1JGYKu0fZaCZZbou1TOPxaKh6ayVx8wAJEs9HynchmVSg==");
                 $jwt = JWT::encode($data, $secretKey, 'HS512');
 
-                $unencodedArray = ['token' => $jwt];
+                $unencodedArray = ['token' => $jwt, 'logo' => base64_encode($parsed_data[0]['logo'])];
                 echo json_encode($unencodedArray);
 	        }
 	        else

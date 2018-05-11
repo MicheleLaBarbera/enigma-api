@@ -55,11 +55,13 @@ $users->setPrefix('/users');
 $users->post('/auth', 'auth');
 $app->mount($users);
 
-$infrastructures = new MicroCollection();
-$infrastructures->setHandler(new Controller\Infrastructures());
-$infrastructures->setPrefix('/infrastructures');
-$infrastructures->get('/get', 'get');
-$app->mount($infrastructures);
+$hostgroups = new MicroCollection();
+$hostgroups->setHandler(new Controller\Hostgroups());
+$hostgroups->setPrefix('/hostgroups');
+$hostgroups->get('/get', 'get');
+$hostgroups->get('/get/{id:[0-9]+}', 'getID');
+$hostgroups->put('/set/{id:[0-9]+}', 'setDefaultGroup');
+$app->mount($hostgroups);
 
 $hosts = new MicroCollection();
 $hosts->setHandler(new Controller\Hosts());

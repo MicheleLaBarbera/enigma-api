@@ -1,0 +1,6 @@
+- ToDo:
+
+- Migliorare palette colori e colori evento;
+- Se l'infrastruttura è singola > Redirect
+- Mostra grafici personalizzati On/Off (Back-end)
+- Sito per infrastruttura > 3 upper cards > sviluppo orizzontale con bottone di expand
