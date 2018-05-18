@@ -53,6 +53,7 @@ $users = new MicroCollection();
 $users->setHandler(new Controller\Users());
 $users->setPrefix('/users');
 $users->post('/auth', 'auth');
+$users->post('/create', 'create');
 $app->mount($users);
 
 $hostgroups = new MicroCollection();

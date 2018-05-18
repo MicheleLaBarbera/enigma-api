@@ -3,6 +3,7 @@ namespace Controller;
 
 use \Firebase\JWT\JWT;
 use Phalcon\Mvc\Controller;
+use Phalcon\Http\Response;
 
 class Users extends Controller
 {
@@ -47,8 +48,12 @@ class Users extends Controller
                 $secretKey = base64_decode("8idyoIEFxsf\/DOpNVbhbbxoqdDnda5HH4vDuhZ9Q+1JGYKu0fZaCZZbou1TOPxaKh6ayVx8wAJEs9HynchmVSg==");
                 $jwt = JWT::encode($data, $secretKey, 'HS512');
 
-                $unencodedArray = ['token' => $jwt, 'logo' => base64_encode($parsed_data[0]['logo'])];
-                echo json_encode($unencodedArray);
+								$response["status"] = 200;
+								$response["body"] = new Requests();
+                $response["body"]->token = $jwt;
+								$response["body"]->logo = base64_encode($parsed_data[0]['logo']);
+								echo json_encode($response);
+
 	        }
 	        else
 	    		echo json_encode("");
@@ -56,6 +61,52 @@ class Users extends Controller
 	    else
 	    	echo json_encode("");
     }
+
+		public function create() {
+			$user = $this->request->getJsonRawBody();
+			$phql = 'INSERT INTO Model\Users (firstname, lastname, username, password, logo) VALUES (:firstname:, :lastname:, :username:, :password:, :logo:)';
+
+			$status = $this->modelsManager->executeQuery(
+				$phql,
+				[
+					'firstname' => $user->firstname,
+					'lastname' => $user->lastname,
+					'username' => $user->username,
+					'password' => password_hash($user->password, PASSWORD_BCRYPT),
+					'logo' => '0'
+				]
+			);
+
+			// Create a response
+			$response = new Response();
+
+			// Check if the insertion was successful
+			if ($status->success() === true) {
+				$response->setJsonContent([
+					'status' => 201,
+				  'body'   => [
+					 	'message' => 'Utente registrato con successo.'
+					]
+				]);
+			}
+			else {
+				// Send errors to the client
+				$errors = [];
+
+				foreach ($status->getMessages() as $message) {
+					$errors[] = $message->getMessage();
+				}
+
+				$response->setJsonContent(
+				[
+					'status' => '409',
+					'body'   => [
+						'message' => $errors,
+					]
+				]);
+			}
+		 	return $response;
+	 }
 }
 
 ?>
