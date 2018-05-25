@@ -98,12 +98,12 @@ class Hosts extends Controller
 
 		        foreach ($users as $user) {
 	            $parsed_data[$idx] = [
-									'ip' => '0.0.0.0',
-									'name' => 'undefined',
-									'services_crit' => 0,
-									'services_ok' => 0,
-									'services_unknown' => 0,
-									'services_warn' => 0
+									'address' => '0.0.0.0',
+									'alias' => 'undefined',
+									'crit' => 0,
+									'ok' => 0,
+									'unknown' => 0,
+									'warn' => 0
 	            ];
 
 							$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -121,12 +121,12 @@ class Hosts extends Controller
 									if($value != '') {
 										$exploded_values = explode(";", $value);
 
-										$parsed_data[$idx]['ip'] = (isset($exploded_values[0])) ? $exploded_values[0] : '0.0.0.0';
-										$parsed_data[$idx]['name'] = (isset($exploded_values[1])) ? $exploded_values[1] : 'undefined';
-										$parsed_data[$idx]['services_crit'] = (isset($exploded_values[2])) ? $exploded_values[2] : 0;
-										$parsed_data[$idx]['services_ok'] = (isset($exploded_values[3])) ? $exploded_values[3] : 0;
-										$parsed_data[$idx]['services_unknown'] = (isset($exploded_values[4])) ? $exploded_values[4] : 0;
-										$parsed_data[$idx]['services_warn'] = (isset($exploded_values[5])) ? $exploded_values[5] : 0;
+										$parsed_data[$idx]['address'] = (isset($exploded_values[0])) ? $exploded_values[0] : '0.0.0.0';
+										$parsed_data[$idx]['alias'] = (isset($exploded_values[1])) ? $exploded_values[1] : 'undefined';
+										$parsed_data[$idx]['crit'] = (isset($exploded_values[2])) ? $exploded_values[2] : 0;
+										$parsed_data[$idx]['ok'] = (isset($exploded_values[3])) ? $exploded_values[3] : 0;
+										$parsed_data[$idx]['unknown'] = (isset($exploded_values[4])) ? $exploded_values[4] : 0;
+										$parsed_data[$idx]['warn'] = (isset($exploded_values[5])) ? $exploded_values[5] : 0;
 
 										$idx++;
 									}
@@ -134,7 +134,7 @@ class Hosts extends Controller
 							}
 		        }
 						header('Content-type: application/json');
-		       	echo json_encode($parsed_data);							
+		       	echo json_encode($parsed_data);
           } catch(\Firebase\JWT\ExpiredException $e) {
           	echo json_encode([
 							'error' => $e->getMessage()
