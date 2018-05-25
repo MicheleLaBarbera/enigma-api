@@ -9,8 +9,10 @@ class Users extends Controller
 {
 	public function auth() {
         $robot = $this->request->getJsonRawBody();
+								 //"SELECT Model\Users.*, Model\Customers.logo FROM Model\customer_users INNER JOIN Model\customers ON customer_id = Model\customers.id INNER JOIN Model\Users ON user_id = Model\Users.id WHERE Model\Users.username"
 
-        $phql = "SELECT * FROM Model\Users WHERE username = '". $robot->username ."' LIMIT 1";
+				$phql = "SELECT Model\Users.id, Model\Users.password, Model\Users.firstname, Model\Users.lastname, Model\customers.logo FROM Model\customer_users INNER JOIN Model\customers ON customer_id = Model\customers.id INNER JOIN Model\Users ON user_id = Model\Users.id WHERE Model\Users.username = '". $robot->username ."' LIMIT 1";
+				//$phql = "SELECT * FROM Model\Users WHERE username = '". $robot->username ."' LIMIT 1";
         $users = $this->modelsManager->executeQuery($phql);
         $parsed_data = [];
         $data = [];
@@ -106,6 +108,11 @@ class Users extends Controller
 				]);
 			}
 		 	return $response;
+	 }
+
+	 public function get() {
+		 $searchParams = $this->request->getJsonRawBody();
+		 $phql = 'SELECT * FROM Model\Users WHERE name LIKE :name: ORDER BY name';
 	 }
 }
 

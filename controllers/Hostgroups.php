@@ -20,7 +20,7 @@ class Hostgroups extends Controller
 										 FROM Model\user_hostgroups
 										 INNER JOIN Model\customer_servers ON Model\user_hostgroups.customer_server_id = Model\customer_servers.customer_id
 										 INNER JOIN Model\customers ON Model\customer_servers.customer_id = Model\customers.id
-										 WHERE Model\user_hostgroups.user_id = " . $token->data->id;
+										 WHERE Model\user_hostgroups.user_id = " . $token->data->id . " ORDER BY Model\customers.name, Model\customer_servers.description";
 		        $users = $this->modelsManager->executeQuery($phql);
 		        $parsed_data = [];
 		        $data = [];

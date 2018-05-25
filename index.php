@@ -68,6 +68,7 @@ $hosts = new MicroCollection();
 $hosts->setHandler(new Controller\Hosts());
 $hosts->setPrefix('/hosts');
 $hosts->post('/get', 'get');
+$hosts->post('/state', 'getByState');
 $app->mount($hosts);
 
 $services = new MicroCollection();
