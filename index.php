@@ -77,5 +77,11 @@ $services->setPrefix('/services');
 $services->post('/get', 'get');
 $app->mount($services);
 
+$customers = new MicroCollection();
+$customers->setHandler(new Controller\Customers());
+$customers->setPrefix('/customers');
+$customers->get('/get', 'get');
+$app->mount($customers);
+
 $app->handle();
 ?>

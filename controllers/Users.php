@@ -9,10 +9,9 @@ class Users extends Controller
 {
 	public function auth() {
         $robot = $this->request->getJsonRawBody();
-								 //"SELECT Model\Users.*, Model\Customers.logo FROM Model\customer_users INNER JOIN Model\customers ON customer_id = Model\customers.id INNER JOIN Model\Users ON user_id = Model\Users.id WHERE Model\Users.username"
-
+	
 				$phql = "SELECT Model\Users.id, Model\Users.password, Model\Users.firstname, Model\Users.lastname, Model\customers.logo FROM Model\customer_users INNER JOIN Model\customers ON customer_id = Model\customers.id INNER JOIN Model\Users ON user_id = Model\Users.id WHERE Model\Users.username = '". $robot->username ."' LIMIT 1";
-				//$phql = "SELECT * FROM Model\Users WHERE username = '". $robot->username ."' LIMIT 1";
+
         $users = $this->modelsManager->executeQuery($phql);
         $parsed_data = [];
         $data = [];
@@ -66,7 +65,7 @@ class Users extends Controller
 
 		public function create() {
 			$user = $this->request->getJsonRawBody();
-			$phql = 'INSERT INTO Model\Users (firstname, lastname, username, password, logo) VALUES (:firstname:, :lastname:, :username:, :password:, :logo:)';
+			$phql = 'INSERT INTO Model\Users (firstname, lastname, username, password) VALUES (:firstname:, :lastname:, :username:, :password:)';
 
 			$status = $this->modelsManager->executeQuery(
 				$phql,
@@ -74,8 +73,7 @@ class Users extends Controller
 					'firstname' => $user->firstname,
 					'lastname' => $user->lastname,
 					'username' => $user->username,
-					'password' => password_hash($user->password, PASSWORD_BCRYPT),
-					'logo' => '0'
+					'password' => password_hash($user->password, PASSWORD_BCRYPT)
 				]
 			);
 
@@ -84,12 +82,41 @@ class Users extends Controller
 
 			// Check if the insertion was successful
 			if ($status->success() === true) {
-				$response->setJsonContent([
-					'status' => 201,
-				  'body'   => [
-					 	'message' => 'Utente registrato con successo.'
+				$user_id = $status->getModel()->id;
+
+				$phql = 'INSERT INTO Model\customer_users (customer_id, user_id) VALUES (:customer_id:, :user_id:)';
+
+				$status = $this->modelsManager->executeQuery(
+					$phql,
+					[
+						'customer_id' => $user->customer,
+						'user_id' => $user_id
 					]
-				]);
+				);
+				if ($status->success() === true) {
+					$response->setJsonContent([
+						'status' => 201,
+					  'body'   => [
+						 	'message' => 'Utente registrato con successo.'
+						]
+					]);
+				}
+				else {
+					// Send errors to the client
+					$errors = [];
+
+					foreach ($status->getMessages() as $message) {
+						$errors[] = $message->getMessage();
+					}
+
+					$response->setJsonContent(
+					[
+						'status' => '409',
+						'body'   => [
+							'message' => $errors,
+						]
+					]);
+				}
 			}
 			else {
 				// Send errors to the client
@@ -111,8 +138,7 @@ class Users extends Controller
 	 }
 
 	 public function get() {
-		 $searchParams = $this->request->getJsonRawBody();
-		 $phql = 'SELECT * FROM Model\Users WHERE name LIKE :name: ORDER BY name';
+		 $phql = 'SELECT * FROM Model\Users ORDER BY firstname, lastname, username';
 	 }
 }
 
