@@ -17,7 +17,7 @@ class Customers extends Controller
 					try {
           	$token = JWT::decode($jwt, $secretKey, array('HS512'));
 
-            $phql = 'SELECT id, name FROM Model\customers';
+            $phql = 'SELECT id, name, logo FROM Model\customers';
 						$customers = $this->modelsManager->executeQuery($phql);
 
 						$data = [];
@@ -25,7 +25,8 @@ class Customers extends Controller
 						foreach ($customers as $customer) {
 							$data[] = [
 								'id'   => $customer->id,
-								'name' => $customer->name
+								'name' => $customer->name,
+								'logo' => base64_encode($customer->logo)
 							];
 						}
 

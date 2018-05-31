@@ -9,7 +9,7 @@ class Users extends Controller
 {
 	public function auth() {
         $robot = $this->request->getJsonRawBody();
-	
+
 				$phql = "SELECT Model\Users.id, Model\Users.password, Model\Users.firstname, Model\Users.lastname, Model\customers.logo FROM Model\customer_users INNER JOIN Model\customers ON customer_id = Model\customers.id INNER JOIN Model\Users ON user_id = Model\Users.id WHERE Model\Users.username = '". $robot->username ."' LIMIT 1";
 
         $users = $this->modelsManager->executeQuery($phql);
@@ -137,9 +137,27 @@ class Users extends Controller
 		 	return $response;
 	 }
 
-	 public function get() {
-		 $phql = 'SELECT * FROM Model\Users ORDER BY firstname, lastname, username';
-	 }
+  public function get() {
+	  $phql = 'SELECT firstname, lastname, username, Model\Users.id, Model\customer_users.customer_id, Model\customers.name
+						 FROM Model\Users
+						 INNER JOIN Model\customer_users ON Model\customer_users.user_id = Model\Users.id
+						 INNER JOIN Model\customers ON Model\customers.id = Model\customer_users.customer_id
+						 ORDER BY Model\customers.name, firstname, lastname, username';
+		$users = $this->modelsManager->executeQuery($phql);
+
+		$data = [];
+
+		foreach ($users as $user) {
+	    $data[] = [
+				'id'					=> $user->id,
+	    	'username' 		=> $user->username,
+	      'firstname'		=> $user->firstname,
+				'lastname'  	=> $user->lastname,
+				'companyname' => $user->name
+	    ];
+    }
+    echo json_encode($data);
+	}
 }
 
 ?>

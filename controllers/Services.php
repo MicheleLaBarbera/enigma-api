@@ -39,7 +39,7 @@ class Services extends Controller
 
         					$array[$count]['name'] = $exploded_values[0];
 									$array[$count]['status'] = $exploded_values[1];
-        					$array[$count]['age'] = date("H:i:s / d-m-Y", $exploded_values[2]);
+        					$array[$count]['age'] = date("d-m-Y / H:i:s", $exploded_values[2]);
         					$array[$count]['state'] = $exploded_values[3];
 									$array[$count]['h_name'] = $exploded_values[4];
 

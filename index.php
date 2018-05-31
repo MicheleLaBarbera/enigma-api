@@ -54,6 +54,7 @@ $users->setHandler(new Controller\Users());
 $users->setPrefix('/users');
 $users->post('/auth', 'auth');
 $users->post('/create', 'create');
+$users->get('/get', 'get');
 $app->mount($users);
 
 $hostgroups = new MicroCollection();
