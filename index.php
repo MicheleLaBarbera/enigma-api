@@ -63,6 +63,7 @@ $hostgroups->setPrefix('/hostgroups');
 $hostgroups->post('/get', 'get');
 $hostgroups->post('/get/{id:[0-9]+}', 'getID');
 $hostgroups->put('/set/{id:[0-9]+}', 'setDefaultGroup');
+$hostgroups->post('/create', 'create');
 $app->mount($hostgroups);
 
 $hosts = new MicroCollection();

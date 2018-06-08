@@ -3,6 +3,7 @@ namespace Controller;
 
 use \Firebase\JWT\JWT;
 use Phalcon\Mvc\Controller;
+use Phalcon\Http\Response;
 
 class Hostgroups extends Controller
 {
@@ -283,5 +284,48 @@ class Hostgroups extends Controller
       echo 'Token not found in request';
     }
   }
+
+	public function create() {
+		$customer = $this->request->getJsonRawBody();
+		$phql = 'INSERT INTO Model\customers (name, logo) VALUES (:name:, :logo:)';
+		//print_r($customer->logo);
+		$status = $this->modelsManager->executeQuery(
+			$phql,
+			[
+				'name' => $customer->name,
+				'logo' => $customer->logo
+			]
+		);
+
+		// Create a response
+		$response = new Response();
+
+		// Check if the insertion was successful
+		if ($status->success() === true) {
+			$response->setJsonContent([
+				'status' => 201,
+				'body'   => [
+					'message' => 'Cliente registrato con successo.'
+				]
+			]);
+		}
+		else {
+			// Send errors to the client
+			$errors = [];
+
+			foreach ($status->getMessages() as $message) {
+				$errors[] = $message->getMessage();
+			}
+
+			$response->setJsonContent(
+			[
+				'status' => '409',
+				'body'   => [
+					'message' => $errors,
+				]
+			]);
+		}
+		return $response;
+ 	}
 }
 ?>

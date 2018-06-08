@@ -65,7 +65,7 @@ class Users extends Controller
 
 		public function create() {
 			$user = $this->request->getJsonRawBody();
-			$phql = 'INSERT INTO Model\Users (firstname, lastname, username, password) VALUES (:firstname:, :lastname:, :username:, :password:)';
+			$phql = 'INSERT INTO Model\Users (firstname, lastname, username, password, email) VALUES (:firstname:, :lastname:, :username:, :password:, :email:)';
 
 			$status = $this->modelsManager->executeQuery(
 				$phql,
@@ -73,7 +73,8 @@ class Users extends Controller
 					'firstname' => $user->firstname,
 					'lastname' => $user->lastname,
 					'username' => $user->username,
-					'password' => password_hash($user->password, PASSWORD_BCRYPT)
+					'password' => password_hash($user->password, PASSWORD_BCRYPT),
+					'email' => $user->email
 				]
 			);
 
@@ -138,7 +139,7 @@ class Users extends Controller
 	 }
 
   public function get() {
-	  $phql = 'SELECT firstname, lastname, username, Model\Users.id, Model\customer_users.customer_id, Model\customers.name
+	  $phql = 'SELECT firstname, lastname, username, email, Model\Users.id, Model\customer_users.customer_id, Model\customers.name
 						 FROM Model\Users
 						 INNER JOIN Model\customer_users ON Model\customer_users.user_id = Model\Users.id
 						 INNER JOIN Model\customers ON Model\customers.id = Model\customer_users.customer_id
@@ -153,7 +154,8 @@ class Users extends Controller
 	    	'username' 		=> $user->username,
 	      'firstname'		=> $user->firstname,
 				'lastname'  	=> $user->lastname,
-				'companyname' => $user->name
+				'companyname' => $user->name,
+				'email'				=> $user->email
 	    ];
     }
     echo json_encode($data);

@@ -8,7 +8,6 @@ class Customers extends Controller
 {
 	public function get() {
   	$authHeader = $this->request->getHeader('Authorization');
-
     if($authHeader) {
     	list($jwt) = sscanf($authHeader, 'Bearer %s');
       if($jwt) {
