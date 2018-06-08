@@ -22,7 +22,7 @@ class Services extends Controller
 						$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 						if(socket_connect($socket, $robot->ip, $robot->port))
 						{
-              $request = "GET services\nColumns: display_name service_plugin_output service_last_state_change service_state host_name\nFilter: host_name = ". $robot->name ."\n";
+              $request = "GET services\nColumns: display_name service_plugin_output service_last_state_change service_state host_name service_last_check\nFilter: host_name = ". $robot->name ."\n";
         			socket_write($socket, $request, strlen($request));
         			socket_shutdown($socket, 1);
         			socket_recv($socket, $buf, 1000000, MSG_WAITALL);
@@ -42,6 +42,7 @@ class Services extends Controller
         					$array[$count]['age'] = date("d-m-Y / H:i:s", $exploded_values[2]);
         					$array[$count]['state'] = $exploded_values[3];
 									$array[$count]['h_name'] = $exploded_values[4];
+									$array[$count]['last_check'] = date("d-m-Y / H:i:s", $exploded_values[5]);
 
         					$count++;
         				}

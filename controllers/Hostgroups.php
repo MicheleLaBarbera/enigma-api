@@ -286,14 +286,16 @@ class Hostgroups extends Controller
   }
 
 	public function create() {
-		$customer = $this->request->getJsonRawBody();
-		$phql = 'INSERT INTO Model\customers (name, logo) VALUES (:name:, :logo:)';
-		//print_r($customer->logo);
+		$customer_server = $this->request->getJsonRawBody();
+		$phql = 'INSERT INTO Model\customer_servers (customer_id, description, ip_address, port_number) VALUES (:customer_id:, :description:, :ip_address:, :port_number:)';
+		//print_r($customer_server->logo);
 		$status = $this->modelsManager->executeQuery(
 			$phql,
 			[
-				'name' => $customer->name,
-				'logo' => $customer->logo
+				'customer_id' => $customer_server->customer_id,
+				'description' => $customer_server->description,
+				'ip_address' => $customer_server->address,
+				'port_number' => $customer_server->port
 			]
 		);
 
@@ -305,7 +307,7 @@ class Hostgroups extends Controller
 			$response->setJsonContent([
 				'status' => 201,
 				'body'   => [
-					'message' => 'Cliente registrato con successo.'
+					'message' => 'Sito registrato con successo.'
 				]
 			]);
 		}

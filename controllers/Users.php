@@ -52,7 +52,7 @@ class Users extends Controller
 								$response["status"] = 200;
 								$response["body"] = new Requests();
                 $response["body"]->token = $jwt;
-								$response["body"]->logo = base64_encode($parsed_data[0]['logo']);
+								$response["body"]->logo = $parsed_data[0]['logo'];
 								echo json_encode($response);
 
 	        }

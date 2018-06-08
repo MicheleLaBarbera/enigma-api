@@ -5,6 +5,8 @@ use Phalcon\Mvc\Micro\Collection as MicroCollection;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Db\Adapter\Pdo\Mysql as PdoMysql;
 
+error_reporting(E_ERROR | E_PARSE);
+
 $loader = new Loader();
 
 $loader->registerNamespaces(
@@ -83,6 +85,8 @@ $customers = new MicroCollection();
 $customers->setHandler(new Controller\Customers());
 $customers->setPrefix('/customers');
 $customers->get('/get', 'get');
+$customers->get('/get/{id:[0-9]+}', 'getID');
+$customers->post('/create', 'create');
 $app->mount($customers);
 
 $app->handle();

@@ -22,7 +22,7 @@ class Hosts extends Controller
 						$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 						if(socket_connect($socket, $robot->ip, $robot->port))
 						{
-              $request = "GET hostsbygroup\nColumns: host_address host_alias groups host_num_services_crit host_num_services_ok host_num_services_unknown host_num_services_warn display_name\nFilter: groups >= ". $robot->group ."\n";
+              $request = "GET hostsbygroup\nColumns: host_address host_alias groups host_num_services_crit host_num_services_ok host_num_services_unknown host_num_services_warn display_name hard_state\nFilter: groups >= ". $robot->group ."\n";
 
         			socket_write($socket, $request, strlen($request));
         			socket_shutdown($socket, 1);
@@ -46,6 +46,7 @@ class Hosts extends Controller
                   $array[$count]['unknown'] = $exploded_values[5];
         					$array[$count]['warn'] = $exploded_values[6];
 									$array[$count]['name'] = $exploded_values[7];
+									$array[$count]['hard_state'] = $exploded_values[8];
 
         					$count++;
         				}
