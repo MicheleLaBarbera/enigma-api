@@ -43,8 +43,8 @@ class Services extends Controller
 									$array[$count]['age_min'] = date("H:i:s", $exploded_values[2]);
         					$array[$count]['state'] = $exploded_values[3];
 									$array[$count]['h_name'] = $exploded_values[4];
-									$array[$count]['last_check'] = date("d-m-Y H:i:s", $exploded_values[5]);
-
+									$array[$count]['last_check'] = date("d-m-Y", $exploded_values[5]);
+									$array[$count]['last_check_min'] = date("H:i:s", $exploded_values[5]);
 
         					$count++;
         				}
