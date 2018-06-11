@@ -87,9 +87,10 @@ class Hosts extends Controller
         	$secretKey = base64_decode("8idyoIEFxsf\/DOpNVbhbbxoqdDnda5HH4vDuhZ9Q+1JGYKu0fZaCZZbou1TOPxaKh6ayVx8wAJEs9HynchmVSg==");
 					try {
           	$token = JWT::decode($jwt, $secretKey, array('HS512'));
-						$phql = "SELECT Model\customer_servers.ip_address, Model\customer_servers.port_number
+						$phql = "SELECT Model\customers.name, Model\customer_servers.description, Model\customer_servers.ip_address, Model\customer_servers.port_number
 										 FROM Model\user_hostgroups
 										 INNER JOIN Model\customer_servers ON Model\user_hostgroups.customer_server_id = Model\customer_servers.customer_id
+										 INNER JOIN Model\customers ON Model\customers.id = Model\customer_servers.customer_id
 										 WHERE Model\user_hostgroups.user_id = " . $token->data->id;
 		        $users = $this->modelsManager->executeQuery($phql);
 		        $parsed_data = [];
@@ -105,7 +106,8 @@ class Hosts extends Controller
 									'ok' => 0,
 									'unknown' => 0,
 									'warn' => 0,
-									'name' => 'undefined'
+									'name' => 'undefined',
+									'site' => 'undefined'
 	            ];
 
 							$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -129,7 +131,8 @@ class Hosts extends Controller
 										$parsed_data[$idx]['ok'] = (isset($exploded_values[3])) ? $exploded_values[3] : 0;
 										$parsed_data[$idx]['unknown'] = (isset($exploded_values[4])) ? $exploded_values[4] : 0;
 										$parsed_data[$idx]['warn'] = (isset($exploded_values[5])) ? $exploded_values[5] : 0;
-										$parsed_data[$idx]['name'] = (isset($exploded_values[6])) ? $exploded_values[6] : 0;
+										$parsed_data[$idx]['name'] = $user->name;
+										$parsed_data[$idx]['site'] = $user->description;
 
 										$idx++;
 									}
