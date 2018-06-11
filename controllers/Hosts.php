@@ -104,13 +104,14 @@ class Hosts extends Controller
 									'crit' => 0,
 									'ok' => 0,
 									'unknown' => 0,
-									'warn' => 0
+									'warn' => 0,
+									'name' => 'undefined'
 	            ];
 
 							$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 							if(socket_connect($socket, $user->ip_address, $user->port_number))
 							{
-								$request = "GET hosts\nColumns: host_address host_alias host_num_services_crit host_num_services_ok host_num_services_unknown host_num_services_warn\nFilter: state = ". $robot->state ."\n";
+								$request = "GET hosts\nColumns: host_address host_alias host_num_services_crit host_num_services_ok host_num_services_unknown host_num_services_warn name\nFilter: state = ". $robot->state ."\n";
 
 								socket_write($socket, $request, strlen($request));
 								socket_shutdown($socket, 1);
@@ -128,6 +129,7 @@ class Hosts extends Controller
 										$parsed_data[$idx]['ok'] = (isset($exploded_values[3])) ? $exploded_values[3] : 0;
 										$parsed_data[$idx]['unknown'] = (isset($exploded_values[4])) ? $exploded_values[4] : 0;
 										$parsed_data[$idx]['warn'] = (isset($exploded_values[5])) ? $exploded_values[5] : 0;
+										$parsed_data[$idx]['name'] = (isset($exploded_values[6])) ? $exploded_values[6] : 0;
 
 										$idx++;
 									}
