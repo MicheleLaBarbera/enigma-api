@@ -19,7 +19,7 @@ class Hostgroups extends Controller
           	$token = JWT::decode($jwt, $secretKey, array('HS512'));
 						$phql = "SELECT Model\user_hostgroups.state, Model\customer_servers.id, Model\customers.name, Model\customer_servers.ip_address, Model\customer_servers.port_number, Model\customer_servers.description
 										 FROM Model\user_hostgroups
-										 INNER JOIN Model\customer_servers ON Model\user_hostgroups.customer_server_id = Model\customer_servers.customer_id
+										 INNER JOIN Model\customer_servers ON Model\user_hostgroups.customer_server_id = Model\customer_servers.id
 										 INNER JOIN Model\customers ON Model\customer_servers.customer_id = Model\customers.id
 										 WHERE Model\user_hostgroups.user_id = " . $token->data->id . " ORDER BY Model\customers.name, Model\customer_servers.description";
 		        $users = $this->modelsManager->executeQuery($phql);
@@ -28,7 +28,7 @@ class Hostgroups extends Controller
 						$idx = 0;
 
 		        foreach ($users as $user) {
-		            $parsed_data[$idx] = [
+				    		$parsed_data[$idx] = [
 		                'id'   => $user->id,
 										'name' => $user->name,
 										'ip' => $user->ip_address,
@@ -125,6 +125,67 @@ class Hostgroups extends Controller
     }
   }
 
+	public function getUser($id) {
+  	$authHeader = $this->request->getHeader('Authorization');
+
+    if($authHeader) {
+    	list($jwt) = sscanf($authHeader, 'Bearer %s');
+      if($jwt) {
+      	try {
+        	$secretKey = base64_decode("8idyoIEFxsf\/DOpNVbhbbxoqdDnda5HH4vDuhZ9Q+1JGYKu0fZaCZZbou1TOPxaKh6ayVx8wAJEs9HynchmVSg==");
+					try {
+						$phql = "SELECT Model\user_hostgroups.state, Model\customer_servers.id, Model\customers.name, Model\customer_servers.ip_address, Model\customer_servers.port_number, Model\customer_servers.description
+										 FROM Model\user_hostgroups
+										 INNER JOIN Model\customer_servers ON Model\user_hostgroups.customer_server_id = Model\customer_servers.id
+										 INNER JOIN Model\customers ON Model\customer_servers.customer_id = Model\customers.id
+										 WHERE Model\user_hostgroups.user_id = " . $id . " ORDER BY Model\customers.name, Model\customer_servers.description";
+		        $users = $this->modelsManager->executeQuery($phql);
+		        $parsed_data = [];		    
+						$idx = 0;
+
+		        foreach ($users as $user) {
+				    		$parsed_data[$idx] = [
+		                'id'   => $user->id,
+										'name' => $user->name,
+										'ip' => $user->ip_address,
+  									'port' => $user->port_number,
+  									'state' => $user->state,
+  									'description' => $user->description,
+  									'status' => 'up',
+										'hosts_down' => 0,
+										'hosts_pending' => 0,
+										'hosts_unreachable' => 0,
+										'hosts_up' => 0,
+										'services_crit' => 0,
+										'services_ok' => 0,
+										'services_pending' => 0,
+										'services_unknown' => 0,
+										'services_warn' => 0
+		            ];
+								$idx++;
+		        }
+						header('Content-type: application/json');
+            echo json_encode($parsed_data);
+          } catch(\Firebase\JWT\ExpiredException $e) {
+          	echo json_encode([
+							'error' => $e->getMessage()
+						]);
+          }
+        } catch (Exception $e) {
+          header('HTTP/1.0 401 Unauthorized');
+        }
+      }
+      else {
+       header('HTTP/1.0 400 Bad Request');
+      }
+    }
+    else {
+      header('HTTP/1.0 400 Bad Request');
+      echo 'Token not found in request';
+    }
+  }
+
+
 	public function getID($id) {
   	$authHeader = $this->request->getHeader('Authorization');
 
@@ -137,7 +198,7 @@ class Hostgroups extends Controller
           	$token = JWT::decode($jwt, $secretKey, array('HS512'));
 						$phql = "SELECT Model\user_hostgroups.default_group, Model\user_hostgroups.state, Model\customer_servers.id, Model\customers.name, Model\customer_servers.ip_address, Model\customer_servers.port_number, Model\customer_servers.description
 										 FROM Model\user_hostgroups
-										 INNER JOIN Model\customer_servers ON Model\user_hostgroups.customer_server_id = Model\customer_servers.customer_id
+										 INNER JOIN Model\customer_servers ON Model\user_hostgroups.customer_server_id = Model\customer_servers.id
 										 INNER JOIN Model\customers ON Model\customer_servers.customer_id = Model\customers.id
 										 WHERE Model\user_hostgroups.user_id = ". $token->data->id . " AND Model\user_hostgroups.customer_server_id = ". $id;
 						$users = $this->modelsManager->executeQuery($phql);

@@ -66,6 +66,7 @@ $hostgroups->post('/get', 'get');
 $hostgroups->post('/get/{id:[0-9]+}', 'getID');
 $hostgroups->put('/set/{id:[0-9]+}', 'setDefaultGroup');
 $hostgroups->post('/create', 'create');
+$hostgroups->get('/getUser/{id:[0-9]+}', 'getUser');
 $app->mount($hostgroups);
 
 $hosts = new MicroCollection();
