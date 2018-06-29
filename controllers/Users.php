@@ -10,7 +10,12 @@ class Users extends Controller
 	public function auth() {
         $robot = $this->request->getJsonRawBody();
 
-				$phql = "SELECT Model\Users.id, Model\Users.password, Model\Users.firstname, Model\Users.lastname, Model\customers.logo FROM Model\customer_users INNER JOIN Model\customers ON customer_id = Model\customers.id INNER JOIN Model\Users ON user_id = Model\Users.id WHERE Model\Users.username = '". $robot->username ."' LIMIT 1";
+				$phql = "SELECT Model\Users.id, Model\Users.password, Model\Users.firstname,
+												Model\Users.lastname, Model\Users.role, Model\customers.logo
+								 FROM Model\customer_users
+								 INNER JOIN Model\customers ON customer_id = Model\customers.id
+								 INNER JOIN Model\Users ON user_id = Model\Users.id
+								 WHERE Model\Users.username = '". $robot->username ."' LIMIT 1";
 
         $users = $this->modelsManager->executeQuery($phql);
         $parsed_data = [];
@@ -22,6 +27,7 @@ class Users extends Controller
                 'password' => $user->password,
 								'firstname' => $user->firstname,
 								'lastname' => $user->lastname,
+								'role' => $user->role,
 								'logo' => $user->logo
             ];
         }
@@ -43,7 +49,8 @@ class Users extends Controller
                     'data' => [
                         'id'   => $parsed_data[0]['id'],
 												'firstname' => $parsed_data[0]['firstname'],
-												'lastname' => $parsed_data[0]['lastname']
+												'lastname' => $parsed_data[0]['lastname'],
+												'role' => $parsed_data[0]['role']
                     ]
                 ];
                 $secretKey = base64_decode("8idyoIEFxsf\/DOpNVbhbbxoqdDnda5HH4vDuhZ9Q+1JGYKu0fZaCZZbou1TOPxaKh6ayVx8wAJEs9HynchmVSg==");

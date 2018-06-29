@@ -17,11 +17,20 @@ class Hostgroups extends Controller
         	$secretKey = base64_decode("8idyoIEFxsf\/DOpNVbhbbxoqdDnda5HH4vDuhZ9Q+1JGYKu0fZaCZZbou1TOPxaKh6ayVx8wAJEs9HynchmVSg==");
 					try {
           	$token = JWT::decode($jwt, $secretKey, array('HS512'));
-						$phql = "SELECT Model\user_hostgroups.state, Model\customer_servers.id, Model\customers.name, Model\customer_servers.ip_address, Model\customer_servers.port_number, Model\customer_servers.description
-										 FROM Model\user_hostgroups
-										 INNER JOIN Model\customer_servers ON Model\user_hostgroups.customer_server_id = Model\customer_servers.id
-										 INNER JOIN Model\customers ON Model\customer_servers.customer_id = Model\customers.id
-										 WHERE Model\user_hostgroups.user_id = " . $token->data->id . " ORDER BY Model\customers.name, Model\customer_servers.description";
+						if($token->data->role != 0) {
+							$phql = "SELECT Model\user_hostgroups.state, Model\customer_servers.id, Model\customers.name, Model\customer_servers.ip_address, Model\customer_servers.port_number, Model\customer_servers.description
+											 FROM Model\user_hostgroups
+											 INNER JOIN Model\customer_servers ON Model\user_hostgroups.customer_server_id = Model\customer_servers.id
+											 INNER JOIN Model\customers ON Model\customer_servers.customer_id = Model\customers.id
+											 WHERE Model\user_hostgroups.user_id = " . $token->data->id . " ORDER BY Model\customers.name, Model\customer_servers.description";
+						}
+						else {
+							$phql = "SELECT Model\user_hostgroups.state, Model\customer_servers.id, Model\customers.name, Model\customer_servers.ip_address, Model\customer_servers.port_number, Model\customer_servers.description
+											 FROM Model\user_hostgroups
+											 INNER JOIN Model\customer_servers ON Model\user_hostgroups.customer_server_id = Model\customer_servers.id
+											 INNER JOIN Model\customers ON Model\customer_servers.customer_id = Model\customers.id
+											 WHERE Model\user_hostgroups.user_id = " . $token->data->id . " ORDER BY Model\customer_servers.id";
+						}
 		        $users = $this->modelsManager->executeQuery($phql);
 		        $parsed_data = [];
 		        $data = [];
@@ -30,7 +39,7 @@ class Hostgroups extends Controller
 		        foreach ($users as $user) {
 				    		$parsed_data[$idx] = [
 		                'id'   => $user->id,
-										'name' => $user->name,
+										'name' => ($token->data->role != 0) ? $user->name : 'Azienda ' . $user->id,
 										'ip' => $user->ip_address,
   									'port' => $user->port_number,
   									'state' => $user->state,
@@ -140,7 +149,7 @@ class Hostgroups extends Controller
 										 INNER JOIN Model\customers ON Model\customer_servers.customer_id = Model\customers.id
 										 WHERE Model\user_hostgroups.user_id = " . $id . " ORDER BY Model\customers.name, Model\customer_servers.description";
 		        $users = $this->modelsManager->executeQuery($phql);
-		        $parsed_data = [];		    
+		        $parsed_data = [];
 						$idx = 0;
 
 		        foreach ($users as $user) {
@@ -209,7 +218,7 @@ class Hostgroups extends Controller
 		        foreach ($users as $user) {
 		            $parsed_data[$idx] = [
 		                'id'   => $user->id,
-										'name' => $user->name,
+										'name' => ($token->data->role != 0) ? $user->name : 'Azienda ' . $user->id,
 										'ip' => $user->ip_address,
   									'port' => $user->port_number,
   									'state' => $user->state,
